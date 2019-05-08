@@ -23,6 +23,8 @@ tags:
   description: "Operations on event"
 - name: "publisher"
   description: "Operations on publisher"
+- name: "order"
+  description: "Operations about an order"
 
 paths:
 
@@ -186,6 +188,24 @@ paths:
           description: "Wrong username/password"
       x-swagger-router-controller: "User"
 
+  /user/logout:
+    post:
+      tags:
+      - "user"
+      summary: "Logout"
+      description: "Login with a form"
+      operationId: "userLogoutPOST"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful logout"
+        400:
+          description: "Invalid request (were you logged in?)"
+
+
   /user/register:
     post:
       tags:
@@ -237,20 +257,15 @@ paths:
       x-swagger-router-controller: "User"
 
 
-  /cart/{cartId}:
+  /cart:
     get:
       tags:
       - "cart"
-      summary: "View the content of the cart"
-      operationId: "cartCartIdGET"
+      summary: "View the content of the cart" 
+      operationId: "cartGET"
       produces:
       - "application/json"
       parameters:
-      - name: "cartId"
-        in: "path"
-        required: true
-        type: "integer"
-        format: "int64"
       - name: "offset"
         in: "query"
         description: "Pagination offset. Default is 0."
@@ -280,7 +295,7 @@ paths:
       - name: "quantity"
         in: "query"
         type: "integer"
-        description: "Number of copies to add to the cart"
+        description: "Number of copies to add to the cart. Default is 1."
       responses:
         200:
           description: "Successful operation"
@@ -424,7 +439,7 @@ paths:
           description: "Invalid request"
     x-swagger-router-controller: "Event"
 
-  /order/create/{cartId}:
+  /order/create:
     post:
       tags:
       - "order"
@@ -435,12 +450,6 @@ paths:
       - "application/x-www-form-urlencoded"
       produces:
       - "application/json"
-      parameters:
-        - name: "cartId"
-          in: "path"
-          required: true
-          type: "integer"
-          format: "int64"
       responses:
         200:
           description: "Successful placement"
@@ -478,10 +487,7 @@ definitions:
         $ref: "#/definitions/Address"
     title: "User"
     description: "A user of the application."
-    example:
-      id: 1
-      name: "Mario"
-      surname: "Rossi"
+
   Cart:
     type: "object"
     properties:
@@ -528,6 +534,10 @@ definitions:
         - "Available"
         - "Out of stock"
         example: "Available"
+      genre:
+        $ref: "#/definitions/Genre"
+      theme:
+        $ref: "#/definitions/Theme"
     title: "Book"
     description: "A book for sale in the store"
   Amount:
@@ -547,6 +557,7 @@ definitions:
     example:
       currency: "EUR"
       value: 11
+
   Currency:
     type: "string"
     pattern: "^[A-Z]{3,3}$"
@@ -606,6 +617,9 @@ definitions:
       country:
         type: "string"
         example: "Italy"
+    title: "Address"
+    description: "A complete address template, usable in many contexts of the web app"
+
   Event:
     type: "object"
     required:
@@ -628,6 +642,7 @@ definitions:
         format: "date-time"
     title: "Event"
     description: "An event where some books are presented"
+
   Publisher:
     type: "object"
     required:
@@ -647,6 +662,33 @@ definitions:
         example: "Zanichelli"
     title: "Publisher"
     description: "Who edits/publishes a book"
+
+  Genre:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      name:
+        type: "string"
+        example: "Horror"
+      description:
+        type: "string"
+        example: "Very scary"
+    title: "Genre"
+    description: "The genre to which a book belongs to"
+
+  Theme:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"
+    title: "Theme"
+    description: "The theme to which a book belongs to"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
